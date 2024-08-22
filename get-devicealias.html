@@ -1,0 +1,76 @@
+<script type="text/javascript">
+    RED.nodes.registerType('get-devicealias',
+    {
+        category: 'Murr IMPACT67Pro API',
+        color: '#3db60f',
+        defaults: 
+        {
+            name: {value:"get-devicealias"},
+            ip: {value:"127.0.0.1", required:false}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "murr.png",
+        label: function() 
+        {
+            return this.name||"get-devicealias";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="get-devicealias">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-ip"><i class="icon-tag"></i> IO-Link Master IP Address</label>
+        <input type="text" id="node-input-ip" placeholder="msg.ip">
+    </div>
+   
+</script>
+
+<script type="text/html" data-help-name="get-devicealias">
+<h2>Get Device Alias Node</h2>
+
+<p>The <strong>Get Device Alias</strong> node retrieves device information from an IO-Link Master device via HTTP. The node sends a GET request to the specified IP address and returns the Devicealias for all 8 Ports as array of JSON objects in <code>msg.payload</code>.</p>
+<p>The Devicealias is needed for the follwing nodes:.</p>
+<p><strong>-get-deviceidentification</strong>
+<p><strong>-get-processdata</strong>
+<p><strong>-get-parameterdata</strong>
+<p><strong>-get-deviceeventlog</strong>
+<p><strong>-write-processdata</strong>
+<p><strong>-write-parameterdata</strong>
+
+<p> Note: if you want to change the DeviceAlias you can use the write-portconfig node </p>
+<h3>Configuration</h3>
+<ul>
+    <li><strong>IP Address:</strong> The IP address of the IO-Link Master device from which the device alias will be retrieved. This can be set in the node configuration or dynamically overridden via <code>msg.ip</code>.</li>
+</ul>
+
+<h3>msg Properties</h3>
+<p>The following <code>msg</code> properties can be used to dynamically override the node's configuration. If these properties are present in the <code>msg</code>, they take precedence over the values configured in the node:</p>
+<ul>
+    <li><code>msg.ip</code> (<span style="color:blue">string</span>): Overrides the configured IP address.</li>
+</ul>
+
+<p>If the <code>msg.ip</code> property is provided and is a string, it will override the IP address set in the node's configuration. If the IP address is not a valid string, an error will be generated, and the request will not proceed.</p>
+
+<h3>Example</h3>
+<p>Suppose you configure the node with an IP address of <strong>192.168.1.10</strong>. The node will send an HTTP GET request to <code>http://192.168.1.10/iolink/v1/devices</code> to retrieve the device alias.</p>
+
+<p>However, if a <code>msg</code> with the following property is sent:</p>
+<pre><code>
+msg = {
+    ip: "192.168.1.20" // A different IP address
+}
+</code></pre>
+<p>Then the node will use the IP address provided in the <code>msg</code> and send the request to <code>http://192.168.1.20/iolink/v1/devices</code> instead.</p>
+
+<h3>Priority of msg Properties</h3>
+<p>When attributes are passed via <code>msg</code> properties, they <span style="color:red"><strong>always take precedence</strong></span> over the values set in the node's configuration. This allows for dynamic adjustment of the node's behavior based on the messages received at runtime.</p>
+
+<h3>Error Handling</h3>
+<p>If the IP address is not a valid string, or if the HTTP request fails (due to network issues, incorrect IP, etc.), the node will generate an error message, and the request will not complete successfully.</p>
+
+</script>

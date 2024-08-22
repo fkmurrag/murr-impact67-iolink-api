@@ -1,0 +1,74 @@
+<script type="text/javascript">
+    RED.nodes.registerType('get-mastereventlog',
+    {
+        category: 'Murr IMPACT67Pro API',
+        color: '#3db60f',
+        defaults: 
+        {
+            name: {value:"get-mastereventlog"},
+            ip: {value:"127.0.0.1", required:false}
+           
+            
+        },
+        inputs:1,
+        outputs:1,
+        icon: "murr.png",
+        label: function() 
+        {
+            return this.name||"get-mastereventlog";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="get-mastereventlog">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-ip"><i class="icon-tag"></i> IO-Link Master IP Address</label>
+        <input type="text" id="node-input-ip" placeholder="msg.ip">
+    </div>
+    
+</script>
+
+<script type="text/html" data-help-name="get-mastereventlog">
+<h2>Get Master Event Log Node</h2>
+
+<p>The <strong>Get Master Event Log</strong> node is used to send a GET request to retrieve the event log from an IO-Link Master. This node fetches event information from the Master's events endpoint.</p>
+
+<h3>Configuration</h3>
+<ul>
+    <li><strong>IP Address:</strong> The IP address of the IO-Link Master. This IP address is used to construct the request URL.</li>
+</ul>
+
+<h3>msg Properties</h3>
+<p>The following <code>msg</code> properties can be used to dynamically override the node's configuration settings. These properties will take precedence over the static configuration values:</p>
+<ul>
+    <li><code>msg.ip</code> (<span style="color:blue;">string</span>): The IP address of the IO-Link Master. If provided, it will override the configured <strong>IP Address</strong>.</li>
+</ul>
+
+<p><strong>Note:</strong> When <code>msg</code> properties are present in the input message, they <span style="color:red;"><strong>always take precedence</strong></span> over the node’s static configuration. This allows for dynamic updates based on incoming messages.</p>
+
+<h3>Example</h3>
+<p>Assuming the node is configured with:</p>
+<ul>
+    <li><strong>IP Address:</strong> 192.168.1.10</li>
+</ul>
+<p>The node will send a GET request to <code>http://192.168.1.10/iolink/v1/gateway/events</code> to fetch the event log from the Master.</p>
+
+<p>If the <code>msg</code> object includes:</p>
+<pre><code>
+msg = {
+    ip: "192.168.1.20"
+}
+</code></pre>
+<p>Then the node will send the GET request to <code>http://192.168.1.20/iolink/v1/gateway/events</code> instead, using the IP address provided in the <code>msg</code> object.</p>
+
+<h3>Error Handling</h3>
+<p>If the IP address provided in <code>msg.ip</code> is not a valid string, the node will log an error message: <code>"msg.ip is wrong formatted, should be string"</code>.</p>
+
+<h3>Response</h3>
+<p>On a successful request with HTTP status code 200, the <code>msg.payload</code> will contain the JSON response from the Master, and <code>msg.statusCode</code> will be set to the HTTP status code. If the request fails, the node will log an error message including the status code and the response data.</p>
+
+</script>

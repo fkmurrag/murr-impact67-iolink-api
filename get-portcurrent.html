@@ -1,0 +1,82 @@
+<script type="text/javascript">
+    RED.nodes.registerType('get-portcurrent',
+    {
+        category: 'Murr IMPACT67Pro API',
+        color: '#3db60f',
+        defaults: 
+        {
+            name: {value:"get-portcurrent"},
+            ip: {value:"127.0.0.1", required:false},
+            port: {value: 1, required:false}
+		
+        },
+        inputs:1,
+        outputs:1,
+        icon: "murr.png",
+        label: function() 
+        {
+            return this.name||"get-portcurrent";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="get-portcurrent">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-ip"><i class="icon-tag"></i> IO-Link Master IP Address</label>
+        <input type="text" id="node-input-ip" placeholder="msg.ip">
+    </div>
+	<div class="form-row">
+        <label for="node-input-port"><i class="icon-tag"></i> IO-Link Port</label>
+        <input type="number" min="1" max="8" id="node-input-port" placeholder="msg.port">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="get-portcurrent">
+    <h2>Get Port Current Node</h2>
+
+<p>The <strong>Get Port Current</strong> node retrieves the current diagnostics data for a specific port on an IO-Link Master device via an HTTP GET request. The request uses the configured IP address and port number, which can be dynamically overridden by incoming <code>msg</code> properties.</p>
+
+<h3>Configuration</h3>
+<ul>
+    <li><strong>IP Address:</strong> The IP address of the IO-Link Master. This can be set in the node configuration but can also be overridden by <code>msg.ip</code>.</li>
+    <li><strong>Port Number:</strong> The port number on the IO-Link Master to retrieve the current diagnostics data for. This is a numerical value and can be overridden by <code>msg.port</code>.</li>
+</ul>
+
+<h3>msg Properties</h3>
+<p>The following <code>msg</code> properties can be used to dynamically override the node's configuration. If these properties are present in the <code>msg</code>, they take precedence over the values configured in the node:</p>
+<ul>
+    <li><code>msg.ip</code> (<span style="color:blue;">string</span>): Overrides the configured IP address. This should be a valid string representing the IP address of the IO-Link Master.</li>
+    <li><code>msg.port</code> (<span style="color:blue;">number</span>): Overrides the configured port number. This should be a valid number representing the port on the IO-Link Master.</li>
+</ul>
+
+<p>When these <code>msg</code> properties are provided, they <span style="color:red;"><strong>always take precedence</strong></span> over the values set in the node's configuration. This allows for dynamic adjustments based on the messages received during runtime.</p>
+
+<h3>Example</h3>
+<p>Suppose you configure the node with the following settings:</p>
+<ul>
+    <li><strong>IP Address:</strong> 192.168.1.10</li>
+    <li><strong>Port Number:</strong> 2</li>
+</ul>
+<p>The node will send an HTTP GET request to <code>http://192.168.1.10/iolink/v1/vendor/masters/1/ports/2/diagnostics/current</code> to retrieve the current diagnostics data for the specified port.</p>
+
+<p>However, if a <code>msg</code> with the following properties is sent:</p>
+<pre><code>
+msg = {
+    ip: "192.168.1.20",
+    port: 3
+}
+</code></pre>
+<p>Then the node will use the values provided in the <code>msg</code> and send the request to <code>http://192.168.1.20/iolink/v1/vendor/masters/1/ports/3/diagnostics/current</code> instead.</p>
+
+<h3>Error Handling</h3>
+<p>If any of the properties <code>msg.ip</code> or <code>msg.port</code> are not in the correct format (e.g., IP is not a string, or port is not a number), an error message will be generated, and the request will not proceed successfully.</p>
+
+<h3>Response</h3>
+<p>The response from the IO-Link Master is returned in <code>msg.payload</code> along with the <code>msg.statusCode</code> indicating the HTTP status of the request.</p>
+
+</script>

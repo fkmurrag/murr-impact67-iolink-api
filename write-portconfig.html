@@ -1,0 +1,135 @@
+<script type="text/javascript">
+    RED.nodes.registerType('write-portconfig',
+    {
+        category: 'Murr IMPACT67Pro API',
+        color: '#3db60f',
+        defaults: 
+        {
+            name: {value:"write-portconfig"},
+            ip: {value:"", required:false},
+			user: {value:"", required:false},
+			password: {value:"", required:false},
+            port: {value: 1, required:false},
+			devicealias:{value:"",required:false},
+			pin4mode:{value:"IOLINK_AUTOSTART",required:false},
+			pin2mode:{value:"DIGITAL_INPUT",required:false}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "murr.png",
+        label: function() 
+        {
+            return this.name||"write-portconfig";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="write-portconfig">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-ip"><i class="icon-tag"></i> IO-Link Master IP Address</label>
+        <input type="text" id="node-input-ip" placeholder="msg.ip">
+    </div>
+	
+	<div class="form-row">
+        <label for="node-input-user"><i class="icon-tag"></i> Admin User</label>
+        <input type="text" id="node-input-user" placeholder="msg.user">
+    </div>
+	 <div class="form-row">
+        <label for="node-input-password"><i class="icon-tag"></i> Password</label>
+        <input type="password" id="node-input-password" placeholder="msg.password">
+    </div>
+	
+	<div class="form-row">
+        <label for="node-input-port"><i class="icon-tag"></i> IO-Link Port</label>
+        <input type="number" min="1" max="8" id="node-input-port" placeholder="msg.port">
+    </div>
+	<div class="form-row">
+        <label for="node-input-devicealias"><i class="icon-tag"></i> Device Alias</label>
+        <input type="text" id="node-input-devicealias" placeholder="msg.deviceAlias">
+    </div>
+ <div class="form-row">
+        <label for="node-input-pin4mode"><i class="icon-tasks"></i> Pin 4 Mode</label>
+        <select type="text" id="node-input-pin4mode">
+            <option value="DIGITAL_INPUT">DIGITAL INPUT</option>
+            <option value="DIGITAL_OUTPUT">DIGITAL OUTPUT</option>
+            <option value="IOLINK_AUTOSTART">IO-LINK</option>
+        </select>
+    </div>
+	
+ <div class="form-row">
+        <label for="node-input-pin2mode"><i class="icon-tasks"></i> Pin 2 Mode</label>
+        <select type="text" id="node-input-pin2mode">
+            <option value="DIGITAL_INPUT">DIGITAL INPUT</option>
+            <option value="DIGITAL_OUTPUT">DIGITAL OUTPUT</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="write-portconfig">
+<h2>Write Port Configuration Node</h2>
+
+<p>The <strong>Write Port Configuration</strong> node is designed to send a POST request to configure a specific port on an IO-Link master. The configuration parameters can be provided through either the node's static configuration or dynamically through incoming <code>msg</code> properties.</p>
+
+<h3>Configuration</h3>
+<ul>
+    <li><strong>Port:</strong> The port number on the IO-Link master to configure.</li>
+    <li><strong>IP Address:</strong> The IP address of the IO-Link master.</li>
+    <li><strong>User:</strong> The username for basic authentication.(User need admin rights)</li>
+    <li><strong>Password:</strong> The password for basic authentication.</li>
+    <li><strong>Pin 4 Mode:</strong> The mode for pin 4, specified as a string (e.g., 'IOLINK_AUTOSTART').</li>
+    <li><strong>Pin 2 Mode:</strong> The IQ configuration for pin 2, specified as a string (e.g., 'DIGITAL_OUTPUT').</li>
+    <li><strong>Device Alias:</strong> The Device Alias for the Port can be changed here</li>
+</ul>
+
+<h3>msg Properties</h3>
+<p>The following <code>msg</code> properties can be used to override the node's configuration settings dynamically. These properties will take precedence over the static configuration:</p>
+<ul>
+    <li><code>msg.ip</code> (<span style="color:blue;">string</span>): The IP address of the IO-Link master. If provided, it will override the configured IP address.</li>
+    <li><code>msg.deviceAlias</code> (<span style="color:blue;">string</span>): The alias of the device. If provided, it will override the configured device alias.</li>
+    <li><code>msg.port</code> (<span style="color:blue;">number</span>): The port number to be configured. If provided, it will override the configured port.</li>
+    <li><code>msg.pin4Mode</code> (<span style="color:blue;">string</span>): The mode for pin 4. If provided, it will override the configured pin 4 mode.</li>
+    <li><code>msg.pin2Mode</code> (<span style="color:blue;">string</span>): The IQ configuration for pin 2. If provided, it will override the configured pin 2 mode.</li>
+    <li><code>msg.user</code> (<span style="color:blue;">string</span>): The username for authentication. If provided, it will override the configured username.</li>
+    <li><code>msg.password</code> (<span style="color:blue;">string</span>): The password for authentication. If provided, it will override the configured password.</li>
+</ul>
+
+<p><strong>Note:</strong> When <code>msg</code> properties are present in the input message, they <span style="color:red;"><strong>always take precedence</strong></span> over the node’s configuration settings. This allows for dynamic updates based on incoming messages.</p>
+
+<h3>Example</h3>
+<p>Assuming the node is configured with:</p>
+<ul>
+    <li><strong>Port:</strong> 2</li>
+    <li><strong>IP Address:</strong> 192.168.1.10</li>
+    <li><strong>User:</strong> admin</li>
+    <li><strong>Password:</strong> password123</li>
+    <li><strong>Pin 4 Mode:</strong> 'IOLINK_AUTOSTART'</li>
+    <li><strong>Pin 2 Mode:</strong> 'DIGITAL_INPUT'</li>
+    <li><strong>Device Alias:</strong> Temperature_Sensor</li>
+</ul>
+<p>The node will send a POST request to <code>http://192.168.1.10/iolink/v1/masters/1/ports/2/configuration</code> with the body containing the configuration parameters.</p>
+
+<p>If the <code>msg</code> object includes:</p>
+<pre><code>
+msg = {
+    ip: "192.168.1.20",
+    deviceAlias: "device02",
+    port: 3,
+    pin4Mode: "IOLINK_AUTOSTART",
+    pin2Mode: "DIGITAL_INPUT",
+    user: "user123",
+    password: "newpassword"
+}
+</code></pre>
+<p>Then the node will send the request to <code>http://192.168.1.20/iolink/v1/masters/1/ports/3/configuration</code> with the body containing the updated configuration parameters.</p>
+
+<h3>Error Handling</h3>
+<p>In case of incorrectly formatted <code>msg</code> properties (e.g., <code>msg.pin4Mode</code> is not a string or <code>msg.port</code> is not a number), the node will log an error message and the request will not be executed.</p>
+
+<h3>Response</h3>
+<p>On a successful request with HTTP status code 204, the <code>msg.payload</code> will be set to <code>"PortConfigSuccessful"</code>, and <code>msg.statusCode</code> will contain the HTTP status code. If the request fails, the node will log an error message with the status code and response data.</p>
+
+</script>

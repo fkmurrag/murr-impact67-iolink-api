@@ -1,0 +1,79 @@
+<script type="text/javascript">
+    RED.nodes.registerType('get-deviceidentification',
+    {
+        category: 'Murr IMPACT67Pro API',
+        color: '#3db60f',
+        defaults: 
+        {
+            name: {value:"get-deviceidentification"},
+            ip: {value:"127.0.0.1", required:false},
+			devicealias: {value:"master1port1", required:false}
+           
+         
+        },
+        inputs:1,
+        outputs:1,
+        icon: "murr.png",
+        label: function() 
+        {
+            return this.name||"get-deviceidentification";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="get-deviceidentification">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-ip"><i class="icon-tag"></i> IO-Link Master IP Address</label>
+        <input type="text" id="node-input-ip" placeholder="msg.ip">
+    </div>
+	<div class="form-row">
+        <label for="node-input-devicealias"><i class="icon-tag"></i> Device Alias</label>
+        <input type="text" id="node-input-devicealias" placeholder="msg.deviceAlias">
+    </div>
+   
+</script>
+
+<script type="text/html" data-help-name="get-deviceidentification">
+<h2>Get Device Identification Node</h2>
+
+<p>The <strong>Get Device Identification</strong> node retrieves identification information for a specific IO-Link device using its alias via HTTP. The node sends a GET request to the specified IP address of the corresponding IO-Link Master and Device Alias and returns the identification details in the <code>msg.payload</code>.</p>
+
+<h3>Configuration</h3>
+<ul>
+    <li><strong>IP Address:</strong> The IP address of the IO-Link Master. This can be set in the node configuration or dynamically overridden via <code>msg.ip</code>.</li>
+    <li><strong>Device Alias:</strong> The alias of the specific IO-Link device whose identification information you want to retrieve. This can be set in the node configuration or dynamically overridden via <code>msg.deviceAlias</code>.</li>
+</ul>
+
+<h3>msg Properties</h3>
+<p>The following <code>msg</code> properties can be used to dynamically override the node's configuration. If these properties are present in the <code>msg</code>, they take precedence over the values configured in the node:</p>
+<ul>
+    <li><code>msg.ip</code> (<span style="color:blue">string</span>): Overrides the configured IP address.</li>
+    <li><code>msg.deviceAlias</code> (<span style="color:blue">string</span>): Overrides the configured device alias.</li>
+</ul>
+
+<p>If the <code>msg.ip</code> or <code>msg.deviceAlias</code> properties are provided and are valid strings, they will override the respective values set in the node's configuration. If the IP address or device alias is not a valid string, an error will be generated, and the request will not proceed.</p>
+
+<h3>Example</h3>
+<p>Suppose you configure the node with an IP address of <strong>192.168.1.10</strong> and a device alias of <strong>sensor1</strong>. The node will send an HTTP GET request to <code>http://192.168.1.10/iolink/v1/devices/sensor1/identification</code> to retrieve the device identification information.</p>
+
+<p>However, if a <code>msg</code> with the following properties is sent:</p>
+<pre><code>
+msg = {
+    ip: "192.168.1.20", // A different IP address
+    deviceAlias: "sensor2" // A different device alias
+}
+</code></pre>
+<p>Then the node will use the IP address and device alias provided in the <code>msg</code> and send the request to <code>http://192.168.1.20/iolink/v1/devices/sensor2/identification</code> instead.</p>
+
+<h3>Priority of msg Properties</h3>
+<p>When attributes are passed via <code>msg</code> properties, they <span style="color:red"><strong>always take precedence</strong></span> over the values set in the node's configuration. This allows for dynamic adjustment of the node's behavior based on the messages received at runtime.</p>
+
+<h3>Error Handling</h3>
+<p>If the IP address or device alias is not a valid string, or if the HTTP request fails (due to network issues, incorrect IP, etc.), the node will generate an error message, and the request will not complete successfully.</p>
+   
+</script>
+

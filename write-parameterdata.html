@@ -1,0 +1,161 @@
+<script type="text/javascript">
+    RED.nodes.registerType('write-parameterdata',
+    {
+        category: 'Murr IMPACT67Pro API',
+        color: '#3db60f',
+        defaults: 
+        {
+            name: {value:"write-parameterdata"},
+            ip: {value:"127.0.0.1", required:false},
+			user: {value:"", required:false},
+			password: {value:"", required:false},
+			devicealias: {value: "master1port1", required:false},
+			index: {value: 64, required:false},
+			subindex: {value: 0, required:false},
+			parameterData : {value:"[]", required:false}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "murr.png",
+        label: function() 
+        {
+            return this.name||"write-parameterdata";
+        },
+		oneditprepare: function() {
+            // TypedInput für JSON-Editor initialisieren
+            $("#node-input-parameterData").typedInput({
+                default: 'json',
+                types: ['json']
+            });
+
+            // Setze den initialen Wert, falls vorhanden
+            let initialValue = this.parameterData || "[]";
+            $("#node-input-parameterData").typedInput('value', initialValue);
+			
+            
+        },
+        oneditsave: function() {
+            // Hole den Wert vom JSON-Editor
+            let value = $("#node-input-parameterData").typedInput('value');
+            try {
+                // Parsen und erneut als JSON-String speichern
+                let parsedArray = JSON.parse(value);
+
+                // Sicherstellen, dass es ein Array ist
+                if (!Array.isArray(parsedArray)) {
+                    throw new Error("Value is not a valid JSON array");
+                }
+
+                // Speichern des korrekt formatierten JSON-Strings
+                this.parameterData = value;
+            } catch (err) {
+                this.error("Invalid JSON format: " + err.message);
+                this.parameterData = "[]"; // Fallback auf Standardwert
+            }
+			
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="write-parameterdata">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-ip"><i class="icon-tag"></i> IO-Link Master IP Address</label>
+        <input type="text" id="node-input-ip" placeholder="msg.ip">
+    </div>
+		<div class="form-row">
+        <label for="node-input-user"><i class="icon-tag"></i> Admin User</label>
+        <input type="text" id="node-input-user" placeholder="msg.user">
+    </div>
+	 <div class="form-row">
+        <label for="node-input-password"><i class="icon-tag"></i> Password</label>
+        <input type="password" id="node-input-password" placeholder="msg.password">
+    </div>
+    <div class="form-row">
+        <label for="node-input-devicealias"><i class="icon-tag"></i> Devivce Alias</label>
+        <input type="text" id="node-input-devicealias" placeholder="msg.deviceAlias">
+    </div>
+	<div class="form-row">
+        <label for="node-input-index"><i class="icon-tag"></i> Index</label>
+        <input type="number" min="0" id="node-input-index" placeholder="msg.index">
+    </div>
+	<div class="form-row">
+        <label for="node-input-subindex"><i class="icon-tag"></i> Subindex</label>
+        <input type="number" min="0" id="node-input-subindex" placeholder="msg.subindex">
+    </div>
+	
+<div class="form-row">
+        <label for="node-input-parameterData"><i class="icon-tag"></i> Parameter Data</label>
+        <input type="hidden" id="node-input-parameterData-type">
+        <input type="text" id="node-input-parameterData">  <!-- JSON-Editor Eingabefeld -->
+    </div>
+	
+</script>
+
+<script type="text/html" data-help-name="write-parameterdata">
+<h2>Write Parameter Data Node</h2>
+
+<p>The <strong>Write Parameter Data</strong> node is used to send a POST request to an IO-Link Master to write parameter data to a connected IO-Link Device. The request is constructed using the IP address, device alias, and other parameters provided either through the node's configuration or the incoming <code>msg</code> properties.</p>
+
+<h3>Configuration</h3>
+<ul>
+    <li><strong>IP Address:</strong> The IP address of the IO-Link Master.</li>
+    <li><strong>User:</strong> The username for basic authentication.(The User needs admin rights)</li>
+    <li><strong>Password:</strong> The password for basic authentication.</li>
+    <li><strong>Device Alias:</strong> The alias of the device.</li>
+    <li><strong>Index:</strong> The index of the parameter to be written.</li>
+    <li><strong>Subindex:</strong> The subindex of the parameter to be written.</li>
+    <li><strong>Parameter Data:</strong> The parameter data to be sent in the request, formatted as a JSON string.</li>
+</ul>
+
+<h3>msg Properties</h3>
+<p>The following <code>msg</code> properties can be used to dynamically override the node's configuration settings. These properties will take precedence over the static configuration:</p>
+<ul>
+    <li><code>msg.pD</code> (<span style="color:blue;">object</span>): The parameter data to be sent in the request. This should be a JSON object. If provided, it will override the configured <code>parameterData</code>.</li>
+    <li><code>msg.ip</code> (<span style="color:blue;">string</span>): The IP address of the IO-Link Master. If provided, this value will override the configured IP address.</li>
+    <li><code>msg.deviceAlias</code> (<span style="color:blue;">string</span>): The alias of the device. If provided, this value will override the configured device alias.</li>
+    <li><code>msg.index</code> (<span style="color:blue;">number</span>): The index of the parameter to be written. If provided, this value will override the configured index.</li>
+    <li><code>msg.subindex</code> (<span style="color:blue;">number</span>): The subindex of the parameter to be written. If provided, this value will override the configured subindex.</li>
+    <li><code>msg.user</code> (<span style="color:blue;">string</span>): The username for authentication. If provided, this value will override the configured username.</li>
+    <li><code>msg.password</code> (<span style="color:blue;">string</span>): The password for authentication. If provided, this value will override the configured password.</li>
+</ul>
+
+<p><strong>Note:</strong> When <code>msg</code> properties are included in the input message, they <span style="color:red;"><strong>always take precedence</strong></span> over the node's configuration settings. This allows for flexible and dynamic updates based on incoming messages.</p>
+
+<h3>Example</h3>
+<p>For instance, if the node is configured with:</p>
+<ul>
+    <li><strong>IP Address:</strong> 192.168.1.10</li>
+    <li><strong>User:</strong> admin</li>
+    <li><strong>Password:</strong> password123</li>
+    <li><strong>Device Alias:</strong> device01</li>
+    <li><strong>Index:</strong> 1</li>
+    <li><strong>Subindex:</strong> 0</li>
+    <li><strong>Parameter Data:</strong> {"value": 42}</li>
+</ul>
+<p>The node will send a POST request to <code>http://192.168.1.10/iolink/v1/devices/device01/parameters/1/subindices/0/value</code> with the body containing <code>{"value": 42}</code>.</p>
+
+<p>If the <code>msg</code> object includes the following properties:</p>
+<pre><code>
+msg = {
+    pD: {"value": 56},
+    ip: "192.168.1.20",
+    deviceAlias: "device02",
+    index: 2,
+    subindex: 1,
+    user: "user123",
+    password: "newpassword"
+}
+</code></pre>
+<p>Then the node will use these values and send the request to <code>http://192.168.1.20/iolink/v1/devices/device02/parameters/2/subindices/1/value</code> with the body containing <code>{"value": 56}</code>.</p>
+
+<h3>Error Handling</h3>
+<p>If any <code>msg</code> properties are incorrectly formatted (e.g., <code>msg.pD</code> is not a valid JSON object or <code>msg.index</code> is not a number), the node will log an error message and the request will not be executed.</p>
+
+<h3>Response</h3>
+<p>On a successful request, if the HTTP status code is 204, the <code>msg.payload</code> will be set to <code>"WriteParameterDataSuccessful"</code>, and <code>msg.statusCode</code> will contain the HTTP status code. If the request fails, the node will log an error message with the status code and response data.</p>
+
+</script>

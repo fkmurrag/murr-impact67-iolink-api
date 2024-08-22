@@ -1,0 +1,81 @@
+<script type="text/javascript">
+    RED.nodes.registerType('get-portvoltagestatistic',
+    {
+        category: 'Murr IMPACT67Pro API',
+        color: '#3db60f',
+        defaults: 
+        {
+            name: {value:"get-portvoltagestatistic"},
+            ip: {value:"127.0.0.1", required:false},
+            port: {value: 1, required:false}
+			
+        },
+        inputs:1,
+        outputs:1,
+        icon: "murr.png",
+        label: function() 
+        {
+            return this.name||"get-portvoltagestatistic";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="get-portvoltagestatistic">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-ip"><i class="icon-tag"></i> IO-Link Master IP Address</label>
+        <input type="text" id="node-input-ip" placeholder="msg.ip">
+    </div>
+	<div class="form-row">
+        <label for="node-input-port"><i class="icon-tag"></i> IO-Link Port</label>
+        <input type="number" min="1" max="8" id="node-input-port" placeholder="msg.port">
+    </div>
+</script>
+
+<script type="text/html" data-help-name="get-portvoltagestatistic">
+<h2>Get Port Statistic Voltage Node</h2>
+
+<p>The <strong>Get Port Statistic Voltage</strong> node retrieves voltage statistics for a specific port on an IO-Link Master. It sends an HTTP GET request to the configured URL, which is dynamically constructed using the IP address and port number specified in either the node's configuration or incoming <code>msg</code> properties.</p>
+
+<h3>Configuration</h3>
+<ul>
+    <li><strong>IP Address:</strong> The IP address of the IO-Link Master . This value is set in the node configuration. If an <code>ip</code> is provided via the <code>msg</code> object, it will override this configuration.</li>
+    <li><strong>Port Number:</strong> The port number on the IO-Link Master  from which to retrieve voltage statistics. This value is set in the node configuration and will be converted to a string. If a <code>port</code> is provided via the <code>msg</code> object, it will override this configuration.</li>
+</ul>
+
+<h3>msg Properties</h3>
+<p>The following <code>msg</code> properties can be used to dynamically override the node's configuration settings. These properties, if present, will take precedence over the static configuration:</p>
+<ul>
+    <li><code>msg.ip</code> (<span style="color:blue;">string</span>): The IP address to use for the HTTP request. If provided, this value will override the configured IP address. It should be a valid IP address formatted as a string.</li>
+    <li><code>msg.port</code> (<span style="color:blue;">number</span>): The port number to use for the HTTP request. If provided, this value will override the configured port number. It should be a valid number, which will be converted to a string in the request URL.</li>
+</ul>
+
+<p><strong>Note:</strong> When <code>msg</code> properties are included in the input message, they <span style="color:red;"><strong>always take precedence</strong></span> over the configuration settings of the node. This allows for flexible and dynamic updates based on incoming messages.</p>
+
+<h3>Example</h3>
+<p>For instance, if the node is configured with:</p>
+<ul>
+    <li><strong>IP Address:</strong> 192.168.1.10</li>
+    <li><strong>Port Number:</strong> 4</li>
+</ul>
+<p>The node will make an HTTP GET request to <code>http://192.168.1.10/iolink/v1/vendor/masters/1/ports/4/statistics/voltage</code> to fetch voltage statistics for port 4.</p>
+
+<p>If the <code>msg</code> object includes the following properties:</p>
+<pre><code>
+msg = {
+    ip: "192.168.1.20",
+    port: 5
+}
+</code></pre>
+<p>Then the node will use these values and make the request to <code>http://192.168.1.20/iolink/v1/vendor/masters/1/ports/5/statistics/voltage</code>.</p>
+
+<h3>Error Handling</h3>
+<p>If the <code>msg</code> properties are incorrectly formatted (e.g., <code>msg.ip</code> is not a string or <code>msg.port</code> is not a number), the node will log an error message and the request will not be executed.</p>
+
+<h3>Response</h3>
+<p>On a successful request, the response from the IO-Link Master will be included in the <code>msg.payload</code> property, and the HTTP status code will be included in <code>msg.statusCode</code>.</p>
+
+</script>

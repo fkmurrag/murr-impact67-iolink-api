@@ -1,0 +1,97 @@
+<script type="text/javascript">
+    RED.nodes.registerType('get-parameterdata',
+    {
+        category: 'Murr IMPACT67Pro API',
+        color: '#3db60f',
+        defaults: 
+        {
+            name: {value:"get-parameterdata"},
+            ip: {value:"127.0.0.1", required:false},
+			devicealias:{value: "master1port1", require:false},
+			index:{value: 16, require:false},
+			subindex:{value: 0, require:false}
+       
+        },
+        inputs:1,
+        outputs:1,
+        icon: "murr.png",
+        label: function() 
+        {
+            return this.name||"get-parameterdata";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="get-parameterdata">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-ip"><i class="icon-tag"></i> IO-Link Master IP Address</label>
+        <input type="text" id="node-input-ip" placeholder="msg.ip">
+    </div>
+	 <div class="form-row">
+        <label for="node-input-devicealias"><i class="icon-tag"></i> Device Alias</label>
+        <input type="text" id="node-input-devicealias" placeholder="msg.deviceAlias">
+    </div>
+	  <div class="form-row">
+        <label for="node-input-index"><i class="icon-tag"></i> Index</label>
+        <input type="number" min="0" id="node-input-index" placeholder="msg.index">
+    </div>
+	  <div class="form-row">
+        <label for="node-input-subindex"><i class="icon-tag"></i> Subindex</label>
+        <input type="number" id="node-input-subindex" placeholder="msg.subindex">
+    </div>
+
+</script>
+
+<script type="text/html" data-help-name="get-parameterdata">
+<h2>Get Parameter Data Node</h2>
+
+<p>The <strong>Get Parameter Data</strong> node retrieves specific parameter data from an IO-Link device via an HTTP GET request. The request is sent to the IO-Link Master using a configured IP address, device alias, index, and subindex. The retrieved data is returned in the <code>msg.payload</code>.</p>
+
+<h3>Configuration</h3>
+<ul>
+    <li><strong>IP Address:</strong> The IP address of the IO-Link Master. This is set in the node configuration but can be dynamically overridden using <code>msg.ip</code>.</li>
+    <li><strong>Device Alias:</strong> The alias of the target IO-Link device. This can also be overridden by <code>msg.deviceAlias</code>.</li>
+    <li><strong>Index:</strong> The index of the parameter to retrieve. This is a numerical value and can be overridden by <code>msg.index</code>.</li>
+    <li><strong>Subindex:</strong> The subindex of the parameter to retrieve. This is a numerical value and can be overridden by <code>msg.subindex</code>.</li>
+</ul>
+
+<h3>msg Properties</h3>
+<p>The following <code>msg</code> properties can be used to dynamically override the node's configuration. If these properties are present in the <code>msg</code>, they take precedence over the values configured in the node:</p>
+<ul>
+    <li><code>msg.ip</code> (<span style="color:blue;">string</span>): Overrides the configured IP address. The IP address should be a valid string representing the target IO-Link device.</li>
+    <li><code>msg.deviceAlias</code> (<span style="color:blue;">string</span>): Overrides the configured device alias. The alias should be a valid string.</li>
+    <li><code>msg.index</code> (<span style="color:blue;">number</span>): Overrides the configured index. This should be a valid number representing the index of the parameter.</li>
+    <li><code>msg.subindex</code> (<span style="color:blue;">number</span>): Overrides the configured subindex. This should be a valid number representing the subindex of the parameter.</li>
+</ul>
+
+<p>When these <code>msg</code> properties are provided, they <span style="color:red;"><strong>always take precedence</strong></span> over the values set in the node's configuration. This allows for dynamic adjustments based on the messages received during runtime.</p>
+
+<h3>Example</h3>
+<p>Suppose you configure the node with the following settings:</p>
+<ul>
+    <li><strong>IP Address:</strong> 192.168.1.10</li>
+    <li><strong>Device Alias:</strong> device123</li>
+    <li><strong>Index:</strong> 100</li>
+    <li><strong>Subindex:</strong> 1</li>
+</ul>
+<p>The node will send an HTTP GET request to <code>http://192.168.1.10/iolink/v1/devices/device123/parameters/100/subindices/1/value/?format=byteArray</code> to retrieve the parameter data.</p>
+
+<p>However, if a <code>msg</code> with the following properties is sent:</p>
+<pre><code>
+msg = {
+    ip: "192.168.1.20",
+    deviceAlias: "device456",
+    index: 200,
+    subindex: 2
+}
+</code></pre>
+<p>Then the node will use the values provided in the <code>msg</code> and send the request to <code>http://192.168.1.20/iolink/v1/devices/device456/parameters/200/subindices/2/value/?format=byteArray</code> instead.</p>
+
+<h3>Error Handling</h3>
+<p>If any of the properties <code>msg.ip</code>, <code>msg.deviceAlias</code>, <code>msg.index</code>, or <code>msg.subindex</code> are not in the correct format (e.g., IP is not a string, or index is not a number), an error message will be generated, and the request will not proceed successfully.</p>
+
+</script>

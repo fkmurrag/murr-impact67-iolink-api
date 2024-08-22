@@ -1,0 +1,125 @@
+<script type="text/javascript">
+    RED.nodes.registerType('extract-data', {
+        category: 'Murr IMPACT67Pro API',
+        color: '#3db60f',
+        defaults: {
+            dataType: { value: 0, required : true },
+            bitOffset: { value: 0, required : true },
+            Label: { value: "" },
+            bitLength: { value: 0 },
+			gradient:{value:1.00}
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "murr.png",
+        label: function() {
+            return this.name || "extract-data";
+        },
+        oneditprepare: function() {
+           
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="extract-data">
+<div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-dataType"><i class="icon-tasks"></i> Datatype</label>
+        <select type="text" id="node-input-dataType">
+            <option value="0">Boolean</option>
+            <option value="1">Int/Dint</option>
+            <option value="2">Float IEEE754</option>
+            <option value="3">String</option>
+        </select>
+    </div>
+	
+    <div class="form-row">
+        <label for="node-input-bitOffset"><i class="icon-tag"></i> bitOffset</label>
+        <input type="number" id="node-input-bitOffset" placeholder="">
+    </div>
+	
+    <div class="form-row">
+        <label for="node-input-bitLength"><i class="icon-tag"></i> bitLength</label>
+        <input type="number" id="node-input-bitLength" placeholder="">
+    </div>
+	
+	<div class="form-row">
+        <label for="node-input-gradient"><i class="icon-tag"></i> Gradient</label>
+        <input type="number" min="0.000001" max="1000000.0" step="0.000001" id="node-input-gradient" placeholder="1.00">
+    </div>
+	
+	 <div class="form-row">
+        <label for="node-input-Label"><i class="icon-tag"></i> Label</label>
+        <input type="text" id="node-input-Label" placeholder="">
+    </div>
+</script>
+<script type="text/html" data-help-name="extract-data">
+<h2>Extract Data Node</h2>
+
+<p>The <strong>Extract Data</strong> node extracts and processes specific data from an IO-Link dataset. Depending on the data type and the specified configurations, the data is interpreted and processed differently.</p>
+<p>This node can handle responses from both <strong>get-processdata</strong> and <strong>get-parameterdata</strong>.</p>
+
+<h3>Configuration</h3>
+<ul>
+    <li><strong>Data Type:</strong> The data type to be extracted from the IO-Link dataset. Possible values are:
+        <ul>
+            <li><strong>0:</strong> Boolean</li>
+            <li><strong>1:</strong> Integer</li>
+            <li><strong>2:</strong> IEEE754 Float</li>
+            <li><strong>3:</strong> String</li>
+        </ul>
+    </li>
+    <li><strong>Bit Offset:</strong> The bit offset from which the data should be extracted (relevant for Boolean/INT/DINT).</li>
+    <li><strong>Bit Length:</strong> The length of the data to be extracted in bits (only relevant for INT/DINT).</li>
+    <li><strong>Gradient:</strong> A factor by which the extracted data is multiplied to apply a scaling factor (only relevant for INT/DINT).</li>
+    <li><strong>Label:</strong> A custom text that is set as <code>msg.topic</code> to label the extracted data.</li>
+</ul>
+
+<h3>msg Properties</h3>
+<p>The following <code>msg</code> properties can be used to dynamically override the node's configuration. If these properties are present in the <code>msg</code>, they take precedence over the values configured in the node:</p>
+<ul>
+    <li><code>msg.dataType</code> (<span style="color:blue">number</span>): Overrides the configured data type. Possible values are:
+        <ul>
+            <li><strong>0:</strong> Boolean</li>
+            <li><strong>1:</strong> Integer</li>
+            <li><strong>2:</strong> IEEE754 Float</li>
+            <li><strong>3:</strong> String</li>
+        </ul>
+    </li>
+    <li><code>msg.bitOffset</code> (<span style="color:blue">number</span>): Overrides the configured bit offset.</li>
+    <li><code>msg.bitLength</code> (<span style="color:blue">number</span>): Overrides the configured bit length.</li>
+    <li><code>msg.gradient</code> (<span style="color:blue">number</span>): Overrides the configured gradient.</li>
+    <li><code>msg.Label</code> (<span style="color:blue">string</span>): Overrides the configured label and sets the <code>msg.topic</code> attribute.</li>
+</ul>
+
+<p>Please note that before processing the data, the node checks if the <code>msg.payload</code> has the required structure, which should be either <code>iolink</code> or <code>value</code>. If the data is provided as <code>iolink</code>, the node also verifies the validity of the dataset.</p>
+
+<h3>Example</h3>
+<p>Suppose you configure the node with a <strong>Data Type</strong> of <strong>1 (Integer)</strong>, a <strong>Bit Offset</strong> of <strong>8</strong>, and a <strong>Bit Length</strong> of <strong>16</strong>. The extracted data will then be interpreted as an integer, reading the 16 bits starting from the 8th bit.</p>
+
+<p>However, if a <code>msg</code> with the following properties is sent:</p>
+<pre><code>
+msg = {
+    dataType: 2, // IEEE754 Float
+    bitOffset: 0,
+    bitLength: 32,
+    gradient: 1.5,
+    Label: "Temperature",
+    payload: {
+        iolink: {
+            valid: true,
+            value: [0, 0, 128, 63] // Example of a 32-bit floating point number
+        }
+    }
+}
+</code></pre>
+<p>Then the node will use these <code>msg</code> properties and interpret the value as a floating point number, applying a gradient of <strong>1.5</strong>. The <code>msg.topic</code> will be set to <strong>"Temperature"</strong>.</p>
+
+<h3>Priority of msg Properties</h3>
+<p>When attributes are passed via <code>msg</code> properties, they <span style="color:red"><strong>always take precedence</strong></span> over the values set in the node's configuration. This allows for dynamic adjustment of the node's behavior based on the messages received at runtime.</p>
+</p>
+
+</script>

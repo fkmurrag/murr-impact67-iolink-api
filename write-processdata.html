@@ -1,0 +1,164 @@
+<script type="text/javascript">
+    RED.nodes.registerType('write-processdata',
+    {
+        category: 'Murr IMPACT67Pro API',
+        color: '#3db60f',
+        defaults: 
+        {
+            name: {value:"write-processdata"},
+            ip: {value:"", required:false},
+			user: {value:"", required:false},
+			password: {value:"", required:false},
+            devicealias: {value: "", required:false},
+            processData: {value: "[]", required:false},  // Byte-Array als JSON-String
+			valuePin2: {value: false, required:false}  // Default-Wert ist `false`
+		
+        },
+        inputs:1,
+        outputs:1,
+        icon: "murr.png",
+        label: function() 
+        {
+            return this.name || "write-processdata";
+        },
+        oneditprepare: function() {
+            // TypedInput für JSON-Editor initialisieren
+            $("#node-input-processData").typedInput({
+                default: 'json',
+                types: ['json']
+            });
+
+            // Setze den initialen Wert, falls vorhanden
+            let initialValue = this.processData || "[]";
+            $("#node-input-processData").typedInput('value', initialValue);
+			
+			 // Initialisiere das typedInput für das Boolean-Feld
+            $("#node-input-valuePin2").typedInput({
+                default: 'bool',
+                types: ['bool'],
+				typeField:"#node-input-valuePin2-type"
+            });
+
+            // Setze den initialen Wert für Value Pin 2
+            $("#node-input-valuePin2").typedInput('value', node.valuePin2);
+        },
+        oneditsave: function() {
+            // Hole den Wert vom JSON-Editor
+            let value = $("#node-input-processData").typedInput('value');
+            try {
+                // Parsen und erneut als JSON-String speichern
+                let parsedArray = JSON.parse(value);
+
+                // Sicherstellen, dass es ein Array ist
+                if (!Array.isArray(parsedArray)) {
+                    throw new Error("Value is not a valid JSON array");
+                }
+
+                // Speichern des korrekt formatierten JSON-Strings
+                this.processData = value;
+            } catch (err) {
+                this.error("Invalid JSON format: " + err.message);
+                this.processData = "[]"; // Fallback auf Standardwert
+            }
+			
+			
+           // Speichern des Boolean-Werts
+            node.valuePin2 = $("#node-input-valuePin2").typedInput('value');
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="write-processdata">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-ip"><i class="icon-tag"></i> IO-Link Master IP Address</label>
+        <input type="text" id="node-input-ip" placeholder="msg.ip">
+    </div>
+	<div class="form-row">
+        <label for="node-input-user"><i class="icon-tag"></i> Admin User</label>
+        <input type="text" id="node-input-user" placeholder="msg.user">
+    </div>
+	 <div class="form-row">
+        <label for="node-input-password"><i class="icon-tag"></i> Password</label>
+        <input type="password" id="node-input-password" placeholder="msg.password">
+    </div>
+    <div class="form-row">
+        <label for="node-input-devicealias"><i class="icon-tag"></i> Device Alias</label>
+        <input type="text" id="node-input-devicealias" placeholder="msg.deviceAlias">
+    </div>
+    <div class="form-row">
+        <label for="node-input-processData"><i class="icon-tag"></i> Processdata</label>
+        <input type="hidden" id="node-input-processData-type">
+        <input type="text" id="node-input-processData">  <!-- JSON-Editor Eingabefeld -->
+    </div>
+	    <div class="form-row">
+        <label for="node-input-valuePin2"><i class="icon-tag"></i> Value Pin 2</label>
+        <input type="hidden" id="node-input-valuePin2-type">
+        <input type="text" id="node-input-valuePin2">  <!-- Typed Input für Boolean -->
+    </div>
+</script>
+
+
+<script type="text/html" data-help-name="write-processdata">
+ <h2>Write Process Data Node</h2>
+
+<p>The <strong>Write Process Data</strong> node is used to send a POST request to update process data on a specific IO-Link Device. The node allows for configuration through both static settings and dynamic `msg` properties.</p>
+<p>Note: if you want to have the Processdata set active for a longer period you have to periodically write them otherwise they will be set zero</p>
+<h3>Configuration</h3>
+<ul>
+    <li><strong>Device Alias:</strong> The alias of the IO-Link device to update.</li>
+    <li><strong>IP Address:</strong> The IP address of the IO-Link master.</li>
+    <li><strong>Process Data:</strong> The JSON string representing the process data to be sent. This must be a valid JSON array.</li>
+    <li><strong>User:</strong> The username for basic authentication.(User need admin rights)</li>
+    <li><strong>Password:</strong> The password for basic authentication.</li>
+    <li><strong>Value Pin 2:</strong> A boolean value indicating the IQ value for pin 2. This will be converted to lowercase and set to true or false.</li>
+</ul>
+
+<h3>msg Properties</h3>
+<p>The following <code>msg</code> properties can be used to override the node's configuration settings dynamically. These properties take precedence over the static configuration settings:</p>
+<ul>
+    <li><code>msg.pD</code> (<span style="color:blue;">object</span>): The process data to be sent. This should be an array of values. If provided, it will override the configured <strong>Process Data</strong>.</li>
+    <li><code>msg.ip</code> (<span style="color:blue;">string</span>): The IP address of the IO-Link master. If provided, it will override the configured <strong>IP Address</strong>.</li>
+    <li><code>msg.deviceAlias</code> (<span style="color:blue;">string</span>): The alias of the IO-Link device. If provided, it will override the configured <strong>Device Alias</strong>.</li>
+    <li><code>msg.valuePin2</code> (<span style="color:blue;">boolean</span>): The IQ value for pin 2. If provided, it will override the configured <strong>Value Pin 2</strong>.</li>
+    <li><code>msg.user</code> (<span style="color:blue;">string</span>): The username for authentication. If provided, it will override the configured <strong>User</strong>.</li>
+    <li><code>msg.password</code> (<span style="color:blue;">string</span>): The password for authentication. If provided, it will override the configured <strong>Password</strong>.</li>
+</ul>
+
+<p><strong>Note:</strong> When <code>msg</code> properties are included in the input message, they <span style="color:red;"><strong>always take precedence</strong></span> over the node’s configuration settings. This allows for dynamic updates based on incoming messages.</p>
+
+<h3>Example</h3>
+<p>Assuming the node is configured with:</p>
+<ul>
+    <li><strong>Device Alias:</strong> device01</li>
+    <li><strong>IP Address:</strong> 192.168.1.10</li>
+    <li><strong>Process Data:</strong> [1, 2, 3]</li>
+    <li><strong>User:</strong> admin</li>
+    <li><strong>Password:</strong> password123</li>
+    <li><strong>Value Pin 2:</strong> true</li>
+</ul>
+<p>The node will send a POST request to <code>http://192.168.1.10/iolink/v1/devices/device01/processdata/value</code> with the body containing the process data and IQ value for pin 2.</p>
+
+<p>If the <code>msg</code> object includes:</p>
+<pre><code>
+msg = {
+    pD: [4, 5, 6],
+    ip: "192.168.1.20",
+    deviceAlias: "device02",
+    valuePin2: false,
+    user: "user123",
+    password: "newpassword"
+}
+</code></pre>
+<p>Then the node will send the request to <code>http://192.168.1.20/iolink/v1/devices/device02/processdata/value</code> with the updated process data and IQ value for pin 2.</p>
+
+<h3>Error Handling</h3>
+<p>In case of incorrectly formatted <code>msg</code> properties (e.g., <code>msg.pD</code> is not an array or <code>msg.valuePin2</code> is not a boolean), the node will log an error message, and the request will not be executed.</p>
+
+<h3>Response</h3>
+<p>On a successful request with HTTP status code 204, the <code>msg.payload</code> will be set to <code>"WriteProcessDataSuccessful"</code>, and <code>msg.statusCode</code> will contain the HTTP status code. If the request fails, the node will log an error message with the status code and response data.</p>
+   
+</script>

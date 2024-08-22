@@ -1,0 +1,44 @@
+{
+  "name": "node-red-contrib-murr-impact67pro-iolink-api",
+  "version": "1.1.0",
+  "description": "Node Red Examples for the usage of Murr IO-Link Master IMPACT67 Pro .",
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+   "keywords": [
+    "node-red",
+    "iolink",
+    "murr",
+	"api"
+  ],
+  "author": "Felix Kottmann",
+  "license": "MIT",
+  "node-red": {
+    "nodes": {
+      "extract-data": "extract-data.js",
+	  "get-processdata":"get-processdata.js",
+	  "get-parameterdata":"get-parameterdata.js",
+	  "get-devicealias" :"get-devicealias.js",
+	  "get-deviceidentification":"get-deviceidentification.js",
+	  "get-deviceevents":"get-deviceevents.js",
+	  "get-portconfig":"get-portconfig.js",
+	  "get-portstatus":"get-portstatus.js",
+	  "get-masterdiagnostics":"get-masterdiagnostics.js",
+	  "get-masteridentification":"get-masteridentification.js",
+	  "get-mastereventlog":"get-mastereventlog.js",
+	  "get-portcurrentstatistic":"get-portcurrentstatistic.js",
+	  "get-portvoltagetatistic":"get-portvoltagestatistic.js",
+	  "get-porttemperaturestatistic":"get-porttemperaturestatistic.js",
+	  "get-portcurrent":"get-portcurrent.js",
+	  "get-portvoltage":"get-portvoltage.js",
+	  "get-porttemperature":"get-porttemperature.js",
+	  "write-processdata":"write-processdata.js",
+	  "write-parameterdata":"write-parameterdata.js",
+	  "write-portconfig":"write-portconfig.js"
+	  
+    }
+  }
+
+}

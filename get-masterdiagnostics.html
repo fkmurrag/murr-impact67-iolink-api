@@ -1,0 +1,70 @@
+<script type="text/javascript">
+    RED.nodes.registerType('get-masterdiagnostics',
+    {
+        category: 'Murr IMPACT67Pro API',
+        color: '#3db60f',
+        defaults: 
+        {
+            name: {value:"get-masterdiagnostics"},
+            ip: {value:"127.0.0.1", required:false}
+           
+            
+        },
+        inputs:1,
+        outputs:1,
+        icon: "murr.png",
+        label: function() 
+        {
+            return this.name||"get-masterdiagnostics";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="get-masterdiagnostics">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-ip"><i class="icon-tag"></i> IO-Link Master IP Address</label>
+        <input type="text" id="node-input-ip" placeholder="msg.ip">
+    </div>
+    
+</script>
+
+<script type="text/html" data-help-name="get-masterdiagnostics">
+<h2>Get Master Diagnostics Node</h2>
+
+<p>The <strong>Get Master Diagnostics</strong> node retrieves diagnostic information from an IO-Link Master  via an HTTP GET request. The node sends the request to a specified IP address and returns the diagnostic data in the <code>msg.payload</code>.</p>
+
+<h3>Configuration</h3>
+<ul>
+    <li><strong>IP Address:</strong> The IP address of the IO-Link Master. This is set in the node configuration but can also be dynamically overridden using <code>msg.ip</code>.</li>
+</ul>
+
+<h3>msg Properties</h3>
+<p>The following <code>msg</code> property can be used to dynamically override the node's configuration. If this property is present in the <code>msg</code>, it takes precedence over the value configured in the node:</p>
+<ul>
+    <li><code>msg.ip</code> (<span style="color:blue">string</span>): Overrides the configured IP address. The IP address should be a valid string representing the target IO-Link Master device.</li>
+</ul>
+
+<p>When <code>msg.ip</code> is provided, and it is a valid string, it will replace the IP address set in the node's configuration, and the HTTP request will be sent to this new address. If <code>msg.ip</code> is not a valid string, an error will be generated, and the request will not proceed.</p>
+
+<h3>Example</h3>
+<p>Suppose you configure the node with an IP address of <strong>192.168.1.10</strong>. The node will send an HTTP GET request to <code>http://192.168.1.10/iolink/v1/vendor/masters/1/diagnostics/value</code> to retrieve the diagnostic information.</p>
+
+<p>However, if a <code>msg</code> with the following property is sent:</p>
+<pre><code>
+msg = {
+    ip: "192.168.1.20" // A different IP address
+}
+</code></pre>
+<p>Then the node will use the IP address provided in the <code>msg</code> and send the request to <code>http://192.168.1.20/iolink/v1/vendor/masters/1/diagnostics/value</code> instead.</p>
+
+<h3>Priority of msg Properties</h3>
+<p>When the <code>msg.ip</code> property is passed via <code>msg</code>, it <span style="color:red"><strong>always takes precedence</strong></span> over the value set in the node's configuration. This allows for dynamic adjustment of the node's behavior based on the messages received at runtime.</p>
+
+<h3>Error Handling</h3>
+<p>If the IP address provided in <code>msg.ip</code> is not a valid string, or if the HTTP request fails (due to network issues, incorrect IP, etc.), the node will generate an error message, and the request will not complete successfully.</p>
+
+</script>
