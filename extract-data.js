@@ -9,47 +9,71 @@ module.exports = function(RED) {
         let Label = config.Label;
         let bitLength = parseInt(config.bitLength);
         let gradient = parseFloat(config.gradient);
+        let decimals = parseInt (config.decimals);
 
-        // Hilfsfunktion zum Verarbeiten von Payloads
-        function processPayload(payload) {
-            let value = 0;
-			let multiplier=0;
-            for (let i = payload.length - 1; i >= 0; i--) {
-                value += payload[i] << (8 *multiplier);
-				multiplier++;
-            }
-            return value;
-        }
+        
 
         // Verarbeitet den Payload basierend auf dem Datentyp
         function parseValue(payload, dataType, valid) {
 			let val;
+            let hexString="";
+            let binaryString="";
+
             switch (dataType) {
                 case 0: // Boolean Values
-                    let valbool = processPayload(payload);
-                    let maskBool = Math.pow(2,bitOffset);
-                    let boolVal = (valbool & maskBool) >> bitOffset;
-                    val = boolVal === 1;
+                     hexString= Buffer.from(payload).toString('hex'); // Hex-String ohne Trennzeichen
+                    // Hex-String in Binärdarstellung umwandeln
+                     binaryString = BigInt("0x" + hexString).toString(2).padStart(hexString.length * 4, "0");
+                    // Extrahiere das einzelne Bit
+                    let singleBit = binaryString[binaryString.length - 1 - bitOffset]; // Von rechts gezählt
+                    val= parseInt(singleBit,2);
+                    val = val === 1;
                     node.status({fill: "green", shape: "dot", text: "Successfully parsed Boolean"});
                     break;
 
                 case 1: // Integer Values
-                    let valint = processPayload(payload);
-                    let maskInt = Math.pow(2,bitLength)-1;
-                    let intVal = (valint & maskInt) >> bitOffset;
+
+
+                    // Input Hex-String (z. B. von msg.payload)
+                     hexString= Buffer.from(payload).toString('hex'); // Hex-String ohne Trennzeichen
+                    binaryString = BigInt("0x" + hexString).toString(2).padStart(hexString.length * 4, "0");
+
+                    // Berechne den Offset von links
+                    let bitOffsetFromLeft = binaryString.length - bitOffset - bitLength;
+
+                    // Bits extrahieren
+                    let extractedBits = binaryString.substr(bitOffsetFromLeft, bitLength);
+    
+                    let intVal = parseInt(extractedBits, 2);
+
                     val = gradient !== 1.00 ? intVal * gradient : intVal;
                     node.status({fill: "green", shape: "dot", text: "Successfully parsed Number"});
                     break;
 
                 case 2: // IEEE754 Float
-                    let intReal = processPayload(payload);
-                    const bytes = new Uint8Array(4);
-                    bytes[0] = (intReal >> 24) & 0xFF;
-                    bytes[1] = (intReal >> 16) & 0xFF;
-                    bytes[2] = (intReal >> 8) & 0xFF;
-                    bytes[3] = intReal & 0xFF;
-                    const view = new DataView(bytes.buffer);
-                    val = view.getFloat32(0);
+
+
+                    hexString= Buffer.from(payload).toString('hex'); // Hex-String ohne Trennzeichen
+                    binaryString = BigInt("0x" + hexString).toString(2).padStart(hexString.length * 4, "0");
+                    let bitOffsetFromLeftFloat = binaryString.length - bitOffset - 32;
+                    let extractedBitsFloat = binaryString.substr(bitOffsetFromLeftFloat, 32);
+                
+                
+                    let intgerVal = parseInt(extractedBitsFloat,2);
+                    let bufferFloat = Buffer.alloc(4);
+                
+                
+                    bufferFloat.writeUInt32BE(intgerVal, 0);
+                
+                    let realVal = bufferFloat.readFloatBE(0);
+
+                    val = realVal
+                    if(decimals>0)
+                    {
+                        val = val.toFixed(decimals);
+                        val = parseFloat(val);     
+                    }
+                    
                     node.status({fill: "green", shape: "dot", text: "Successfully parsed Float"});
                     break;
 
@@ -103,11 +127,21 @@ module.exports = function(RED) {
             if (msg.hasOwnProperty('Label') && typeof(msg.Label) === 'string') {
                 Label = msg.Label;
             }
+            if (msg.hasOwnProperty('decimals') && typeof(msg.decimals) === 'number') {
+                decimals = msg.decimals;
+            }
 			
 			msg.topic = Label;
-			
+			try{
             msg.payload = parseValue(msg.payload, dataType, pdValid);
 			node.send(msg);
+            }
+            catch(e)
+            {
+                node.error("Error parsing Data" + e.message);
+                node.status({fill: "red", shape: "dot", text: e.message});
+
+            }
 			
         });
     }

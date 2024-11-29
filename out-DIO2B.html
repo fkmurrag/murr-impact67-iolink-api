@@ -1,0 +1,193 @@
+<script type="text/javascript">
+    RED.nodes.registerType('out-DIO2B', {
+        category: 'Murr IOL Devices Output',
+        color: '#3db60f',
+        defaults: {
+            name: { value: "out-DIO2B" },
+			pinPort:{ value:"0" , required:false},
+            pin4X0: { value: false },
+            pin4X1: { value: false },
+            pin4X2: { value: false },
+            pin4X3: { value: false },
+            pin4X4: { value: false },
+			pin4X5: { value: false },
+			pin4X6: { value: false },
+			pin4X7: { value: false },
+			pin2X0: { value: false },
+            pin2X1: { value: false },
+            pin2X2: { value: false },
+            pin2X3: { value: false },
+            pin2X4: { value: false },
+			pin2X5: { value: false },
+			pin2X6: { value: false },
+			pin2X7: { value: false }
+			
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "murr.png",
+        label: function () {
+            return this.name || "out-DIO2B";
+        }
+		
+    });
+</script>
+
+<script type="text/html" data-template-name="out-DIO2B">
+    <style>
+        .checkbox-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+			margin-top:	30px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+			text-align:center;
+        }
+
+        .checkbox-container .checkbox-label label {
+            margin-bottom: 5px;
+        }
+    </style>
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+	 <div class="form-row">
+        <label for="node-input-pinPort"><i class="icon-tasks"></i> Pin or Portbased</label>
+        <select type="number" id="node-input-pinPort">
+            <option value="0">PinBased</option>
+            <option value="1">PortBased</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <div class="checkbox-container">
+            <div class="checkbox-label">
+                <label for="node-input-pin4X0">Pin4_X0</label>
+                <input type="checkbox" id="node-input-pin4X0" style="width:20px;height:20px;">
+            </div>
+            <div class="checkbox-label">
+                <label for="node-input-pin4X1">Pin4_X1</label>
+                <input type="checkbox" id="node-input-pin4X1" style="width:20px;height:20px;">
+            </div>
+            <div class="checkbox-label">
+                <label for="node-input-pin4X2">Pin4_X2</label>
+                <input type="checkbox" id="node-input-pin4X2" style="width:20px;height:20px;">
+            </div>
+            <div class="checkbox-label">
+                <label for="node-input-pin4X3">Pin4_X3</label>
+                <input type="checkbox" id="node-input-pin4X3" style="width:20px;height:20px;">
+            </div>
+            <div class="checkbox-label">
+                <label for="node-input-pin4X4">Pin4_X4</label>
+                <input type="checkbox" id="node-input-pin4X4" style="width:20px;height:20px;">
+            </div>
+			 <div class="checkbox-label">
+                <label for="node-input-pin4X5">Pin4_X5</label>
+                <input type="checkbox" id="node-input-pin4X5" style="width:20px;height:20px;">
+            </div>
+			 <div class="checkbox-label">
+                <label for="node-input-pin4X6">Pin4_X6</label>
+                <input type="checkbox" id="node-input-pin4X6" style="width:20px;height:20px;">
+            </div>
+			 <div class="checkbox-label">
+                <label for="node-input-pin4X7">Pin4_X7</label>
+                <input type="checkbox" id="node-input-pin4X7" style="width:20px;height:20px;">
+            </div>
+        </div>
+		
+		        <div class="checkbox-container">
+            <div class="checkbox-label">
+                <label for="node-input-pin2X0">Pin2_X0</label>
+                <input type="checkbox" id="node-input-pin2X0" style="width:20px;height:20px;">
+            </div>
+            <div class="checkbox-label">
+                <label for="node-input-pin2X1">Pin2_X1</label>
+                <input type="checkbox" id="node-input-pin2X1" style="width:20px;height:20px;">
+            </div>
+            <div class="checkbox-label">
+                <label for="node-input-pin2X2">Pin2_X2</label>
+                <input type="checkbox" id="node-input-pin2X2" style="width:20px;height:20px;">
+            </div>
+            <div class="checkbox-label">
+                <label for="node-input-pin2X3">Pin2_X3</label>
+                <input type="checkbox" id="node-input-pin2X3" style="width:20px;height:20px;">
+            </div>
+            <div class="checkbox-label">
+                <label for="node-input-pin2X4">Pin2_X4</label>
+                <input type="checkbox" id="node-input-pin2X4" style="width:20px;height:20px;">
+            </div>
+			 <div class="checkbox-label">
+                <label for="node-input-pin2X5">Pin2_X5</label>
+                <input type="checkbox" id="node-input-pin2X5" style="width:20px;height:20px;">
+            </div>
+			 <div class="checkbox-label">
+                <label for="node-input-pin2X6">Pin2_X6</label>
+                <input type="checkbox" id="node-input-pin2X6" style="width:20px;height:20px;">
+            </div>
+			 <div class="checkbox-label">
+                <label for="node-input-pin2X7">Pin2_X7</label>
+                <input type="checkbox" id="node-input-pin2X7" style="width:20px;height:20px;">
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="out-DIO2B">
+    <h2>Node: <strong>out-DIO2B</strong></h2>
+
+    <h3>Description:</h3>
+    <p>This node processes input values for multiple digital input/output (DIO) pins. It handles both pin-based and port-based configurations, depending on the <code>pinPort</code> value. The input values are validated, and if any values are invalid, they are reset to default states.</p>
+
+    <h3>Configuration:</h3>
+    <ul>
+        <li><strong>pinPort</strong>: The port mode, controlled by <code>msg.pinPort</code>. It can be either <code>0</code> (pin-based) or <code>1</code> (port-based).</li>
+        <li><strong>pin4X0 - pin4X7</strong>: The individual pin states (boolean) for port 4. These can be set via the message properties <code>msg.pin4X0</code> to <code>msg.pin4X7</code>.</li>
+        <li><strong>pin2X0 - pin2X7</strong>: The individual pin states (boolean) for port 2. These can be set via the message properties <code>msg.pin2X0</code> to <code>msg.pin2X7</code>.</li>
+    </ul>
+
+    <h3>Functionality:</h3>
+    <ol>
+        <li><strong>Input Validation:</strong> The node checks the following:
+            <ul>
+                <li>If <code>msg.pinPort</code> is either <code>0</code> (pin-based) or <code>1</code> (port-based), it is accepted; otherwise, it is reset to <code>0</code>.</li>
+                <li>If each pin value from <code>msg.pin4X0</code> to <code>msg.pin4X7</code> and <code>msg.pin2X0</code> to <code>msg.pin2X7</code> is a valid <code>boolean</code>, they are accepted; otherwise, they are reset, and a warning is displayed.</li>
+            </ul>
+        </li>
+        <li><strong>Process Data:</strong> Based on the <code>pinPort</code> value:
+            <ul>
+                <li>For <strong>pin-based</strong> (pinPort = 0):
+                    <ul>
+                        <li><code>pD[1]</code> is formed using the pins <code>pin2X0</code> to <code>pin2X7</code>.</li>
+                        <li><code>pD[0]</code> is formed using the pins <code>pin4X0</code> to <code>pin4X7</code>.</li>
+                    </ul>
+                </li>
+                <li>For <strong>port-based</strong> (pinPort = 1):
+                    <ul>
+                        <li><code>pD[1]</code> is formed using the combined pins <code>pin4X4</code>, <code>pin2X4</code>, <code>pin4X5</code>, etc.</li>
+                        <li><code>pD[0]</code> is formed using the combined pins <code>pin4X0</code>, <code>pin2X0</code>, <code>pin4X1</code>, etc.</li>
+                    </ul>
+                </li>
+                <li>If the <code>pinPort</code> value is invalid, both <code>pD[1]</code> and <code>pD[0]</code> are reset to <code>0</code>.</li>
+            </ul>
+        </li>
+        <li>A new message containing the process data <code>pD</code> and the current <code>pinPort</code> value is sent.</li>
+    </ol>
+
+    <h3>Example:</h3>
+    <p><strong>Input message:</strong> <code>{ "pinPort": 0, "pin4X0": true, "pin4X1": false, "pin2X0": true, "pin2X1": true }</code></p>
+    <p><strong>Output:</strong> A message containing the process data, e.g., <code>{ "payload": "", "pD": [0x03, 0x01], "pinPort": 0 }</code></p>
+
+    <h3>Status Messages:</h3>
+    <ul>
+        <li><strong>Green:</strong> Process data is ready, and all values are valid.</li>
+        <li><strong>Yellow:</strong> One or more values are invalid and have been reset to their default state.</li>
+    </ul>
+</script>

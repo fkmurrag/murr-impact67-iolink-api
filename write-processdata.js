@@ -3,17 +3,18 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         var node = this;
 
-        let { devicealias, ip, processData, user, password, valuePin2 } = config;
+        let { devicealias, ip, processData, user, password, valuePin2, noIq } = config;
         let pD = JSON.parse(processData);
         let path = `/iolink/v1/devices/${devicealias}/processdata/value`;
-        let requestJSON = {
-            "iolink": { "valid": true, "value": pD },
-            "iqValue": valuePin2.toLowerCase() === "true"
-        };
+      
 
         const http = require('http');
 
         node.on('input', function(msg) {
+		let requestJSON = {
+            "iolink": { "valid": true, "value": pD },
+            "iqValue": valuePin2.toLowerCase() === "true"
+        };
             // Überprüfen und aktualisieren der JSON-Request-Daten und Parameter von msg, falls vorhanden
             if (msg.hasOwnProperty('pD') && typeof msg.pD === "object") {
                 requestJSON.iolink.value = msg.pD;
@@ -39,7 +40,7 @@ module.exports = function(RED) {
             if (!Array.isArray(requestJSON.iolink.value)) {
                  node.error("msg.pD is wrong formatted, should be JSON");
             }
-            if (typeof hostname !== "string") {
+            if (typeof ip !== "string") {
                  node.error("msg.ip is wrong formatted, should be string");
             }
             if (typeof devicealias !== "string") {
@@ -54,8 +55,17 @@ module.exports = function(RED) {
             if (typeof password !== "string") {
                  node.error("msg.password is wrong formatted, should be string");
             }
-
+			
+			
+			if(noIq==true)
+			{
+			let del = delete requestJSON.iqValue;
+			}
+			
+			
+			
             const requestPayload = JSON.stringify(requestJSON);
+			
 			node.status({fill: "yellow", shape: "dot", text: "requesting " +ip+path});
             const options = {
                 hostname: ip,
@@ -68,18 +78,35 @@ module.exports = function(RED) {
                     'Authorization': 'Basic ' + Buffer.from(`${user}:${password}`).toString('base64')
                 }
             };
-
+		
             const request = http.request(options, function(result) {
                 let responseData = '';
                 result.on('data', chunk => responseData += chunk);
 
                 result.on('end', () => {
-                    if (result.statusCode === 204) {
+                    if (result.statusCode === 204 ) {
                         msg.payload = "WriteProcessDataSuccessful";
                         msg.statusCode = result.statusCode;
 						node.status({fill: "green", shape: "dot", text: "request sucessfull"});
                         node.send(msg);
-                    } else {
+					}
+					
+					else if (result.statusCode===400)
+					{
+						let eobj = JSON.parse(responseData);
+						if(eobj.code===501)
+						{
+							node.status({fill: "green", shape: "dot", text: "request sucessfull, but PIN 2 is digital Input"});
+							msg.statusCode = result.statusCode;
+							 node.send(msg);
+						}
+						else
+						{
+							node.error(`Error during WriteProcessData, status code: ${result.statusCode}, response: ${responseData}`);
+						node.status({fill: "red", shape: "dot", text: result.statusCode});
+						}
+					}
+                    else {
                         node.error(`Error during WriteProcessData, status code: ${result.statusCode}, response: ${responseData}`);
 						node.status({fill: "red", shape: "dot", text: result.statusCode});
                     }

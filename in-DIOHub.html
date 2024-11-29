@@ -1,0 +1,103 @@
+<script type="text/javascript">
+    RED.nodes.registerType('in-DIOHub', {
+        category: 'Murr IOL Devices Input',
+        color: '#3db60f',
+        defaults: {
+            name: { value: "in-DIOHub" },
+			pinPort:{ value:"0" , required:false},
+			fwFeatures:{value:"0", required:false}
+           
+			
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "murr.png",
+        label: function () {
+            return this.name || "in-DIOHub";
+        }
+		
+    });
+</script>
+
+<script type="text/html" data-template-name="in-DIOHub">
+  
+   
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+	 <div class="form-row">
+        <label for="node-input-pinPort"><i class="icon-tasks"></i> Pin or Portbased</label>
+        <select type="number" id="node-input-pinPort">
+            <option value="0">PinBased</option>
+            <option value="1">PortBased</option>
+        </select>
+    </div>
+	
+	<div class="form-row">
+        <label for="node-input-fwFeatures"><i class="icon-tasks"></i> Variant</label>
+        <select type="number" id="node-input-fwFeatures">
+            <option value="0">Standard Version</option>
+            <option value="1">Extended Firmwarefeatures</option>
+        </select>
+    </div>
+   
+   
+</script>
+
+<script type="text/html" data-help-name="in-DIOHub">
+    <h2>Node: <strong>in-DIOHub</strong></h2>
+
+    <h3>Description:</h3>
+    <p>This node reads and processes input values from a digital I/O hub. It supports both pin-based and port-based configurations and can handle firmware features for diagnostic purposes.</p>
+
+    <h3>Configuration:</h3>
+    <ul>
+        <li><strong>pinPort</strong>: Determines the configuration mode. It can be either <code>0</code> (pin-based) or <code>1</code> (port-based), set via <code>msg.pinPort</code>.</li>
+        <li><strong>fwFeatures</strong>: Enables or disables firmware features. It can be either <code>0</code> (disabled) or <code>1</code> (enabled), set via <code>msg.fwFeatures</code>.</li>
+    </ul>
+
+    <h3>Functionality:</h3>
+    <ol>
+        <li><strong>Input Validation:</strong> The node performs validation on the following:
+            <ul>
+                <li><code>msg.pinPort</code> must be either <code>0</code> or <code>1</code>. If invalid, it is reset to <code>0</code>.</li>
+                <li><code>msg.fwFeatures</code> must be either <code>0</code> or <code>1</code>. If invalid, it is reset to <code>0</code>.</li>
+            </ul>
+        </li>
+        <li><strong>Process Data:</strong> Based on the <code>pinPort</code> value:
+            <ul>
+                <li>For <strong>pin-based</strong> (pinPort = 0):
+                    <ul>
+                        <li>The node reads and processes pin states for ports 4 and 2 from <code>msg.payload.iolink.value[0]</code> and <code>msg.payload.iolink.value[1]</code>.</li>
+                        <li>Creates attributes like <code>port0Pin4</code>, <code>port1Pin2</code>, etc., based on the pin values.</li>
+                    </ul>
+                </li>
+                <li>For <strong>port-based</strong> (pinPort = 1):
+                    <ul>
+                        <li>The node processes data for each port, creating attributes like <code>port0Pin4</code>, <code>port0Pin2</code>, etc., based on the values in <code>msg.payload.iolink.value[0]</code> and <code>msg.payload.iolink.value[1]</code>.</li>
+                    </ul>
+                </li>
+                <li>If the <code>pinPort</code> value is invalid, the node resets the output and sets <code>msg.payload</code> to an empty string.</li>
+            </ul>
+        </li>
+        <li>If <code>fwFeatures</code> is enabled (value = 1):
+            <ul>
+                <li>The node extracts diagnostic information from <code>msg.payload.iolink.value[2]</code> and <code>msg.payload.iolink.value[3]</code>, including supply voltage, temperature, error status, channel number, global status, and module identification.</li>
+            </ul>
+        </li>
+        <li>A new message containing the processed data <code>pdIn</code> is sent.</li>
+    </ol>
+
+    <h3>Example:</h3>
+    <p><strong>Input message:</strong> <code>{ "pinPort": 1, "fwFeatures": 1, "payload": { "iolink": { "value": [255, 255, 1, 123] } } }</code></p>
+    <p><strong>Output:</strong> A message containing the processed data, e.g., <code>{ "payload": { "port0Pin4": true, "port0Pin2": true, ..., "diagnosticSupplyVoltage": true, "diagnosticTemperature": false, "activeError": false, "channelNumber": 1, "globalStatus": true, "moduleIdentification": 123 } }</code></p>
+
+    <h3>Status Messages:</h3>
+    <ul>
+        <li><strong>Green:</strong> Process data is ready and valid.</li>
+        <li><strong>Yellow:</strong> One or more input values are invalid and have been reset to default values.</li>
+    </ul>
+</script>

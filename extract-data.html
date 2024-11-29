@@ -3,26 +3,27 @@
         category: 'Murr IMPACT67Pro API',
         color: '#3db60f',
         defaults: {
+			name: { value:"extract-data"},
             dataType: { value: 0, required : true },
             bitOffset: { value: 0, required : true },
             Label: { value: "" },
             bitLength: { value: 0 },
-			gradient:{value:1.00}
+			gradient:{value:"1.00"},
+            decimals: {value:2}
         },
         inputs: 1,
         outputs: 1,
         icon: "murr.png",
-        label: function() {
-            return this.name || "extract-data";
-        },
-        oneditprepare: function() {
-           
-        }
-    });
+        label: function() 
+		{
+            return this.name||"extract-data";
+        }    
+});
 </script>
 
-<script type="text/x-red" data-template-name="extract-data">
-<div class="form-row">
+<script type="text/html" data-template-name="extract-data">
+
+    <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
@@ -48,7 +49,12 @@
 	
 	<div class="form-row">
         <label for="node-input-gradient"><i class="icon-tag"></i> Gradient</label>
-        <input type="number" min="0.000001" max="1000000.0" step="0.000001" id="node-input-gradient" placeholder="1.00">
+        <input type="text" id="node-input-gradient" placeholder="1.00">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-decimals"><i class="icon-tag"></i> Float Decimals Digits </label>
+        <input type="number" min="0" max="20" step="1" id="node-input-decimals" placeholder="2">
     </div>
 	
 	 <div class="form-row">
@@ -72,9 +78,10 @@
             <li><strong>3:</strong> String</li>
         </ul>
     </li>
-    <li><strong>Bit Offset:</strong> The bit offset from which the data should be extracted (relevant for Boolean/INT/DINT).</li>
+    <li><strong>Bit Offset:</strong> The bit offset from which the data should be extracted (relevant for Boolean/INT/DINT and FLOAT) The BitOffset can be read out from the corresponding IODD File of the Device or with the usage of the IODD-Viewer.</li>
     <li><strong>Bit Length:</strong> The length of the data to be extracted in bits (only relevant for INT/DINT).</li>
     <li><strong>Gradient:</strong> A factor by which the extracted data is multiplied to apply a scaling factor (only relevant for INT/DINT).</li>
+    <li><strong>Decimals:</strong> number of decimals for the float number (only relevant for Float).</li>
     <li><strong>Label:</strong> A custom text that is set as <code>msg.topic</code> to label the extracted data.</li>
 </ul>
 
@@ -92,6 +99,7 @@
     <li><code>msg.bitOffset</code> (<span style="color:blue">number</span>): Overrides the configured bit offset.</li>
     <li><code>msg.bitLength</code> (<span style="color:blue">number</span>): Overrides the configured bit length.</li>
     <li><code>msg.gradient</code> (<span style="color:blue">number</span>): Overrides the configured gradient.</li>
+    <li><code>msg.decimals</code> (<span style="color:blue">number</span>): Overrides the configured gradient.</li>
     <li><code>msg.Label</code> (<span style="color:blue">string</span>): Overrides the configured label and sets the <code>msg.topic</code> attribute.</li>
 </ul>
 
@@ -106,7 +114,8 @@ msg = {
     dataType: 2, // IEEE754 Float
     bitOffset: 0,
     bitLength: 32,
-    gradient: 1.5,
+    gradient: 1.0,
+    decimals:2,
     Label: "Temperature",
     payload: {
         iolink: {
@@ -116,7 +125,7 @@ msg = {
     }
 }
 </code></pre>
-<p>Then the node will use these <code>msg</code> properties and interpret the value as a floating point number, applying a gradient of <strong>1.5</strong>. The <code>msg.topic</code> will be set to <strong>"Temperature"</strong>.</p>
+<p>Then the node will use these <code>msg</code> properties and interpret the value as a floating point number, applying a gradient of <strong>1.0</strong> which isn't relevant and the Temperature will be displayed with 2 decimals. The <code>msg.topic</code> will be set to <strong>"Temperature"</strong>.</p>
 
 <h3>Priority of msg Properties</h3>
 <p>When attributes are passed via <code>msg</code> properties, they <span style="color:red"><strong>always take precedence</strong></span> over the values set in the node's configuration. This allows for dynamic adjustment of the node's behavior based on the messages received at runtime.</p>

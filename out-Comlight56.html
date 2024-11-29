@@ -1,0 +1,124 @@
+<script type="text/javascript">
+    RED.nodes.registerType('out-Comlight56',
+    {
+        category: 'Murr IOL Devices Output',
+        color: '#3db60f',
+        defaults: 
+        {
+            name: {value:"out-Comlight56"},
+			ledColor:{value:"0",required:false},
+			ledMode:{value:"0",required:false},
+			buzzPattern:{value:"0",required:false},
+			buzzState:{value:"0",required:false}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "murr.png",
+        label: function() 
+        {
+            return this.name||"out-Comlight56";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="out-Comlight56">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+ <div class="form-row">
+        <label for="node-input-ledColor"><i class="icon-tasks"></i> Led Color</label>
+        <select type="text" id="node-input-ledColor">
+            <option value="0">Off</option>
+            <option value="1">Red</option>
+            <option value="2">Green</option>
+			<option value="3">Amber</option>
+			<option value="4">Blue</option>
+			<option value="5">Pruple</option>
+			<option value="6">Cyan</option>
+			<option value="7">White</option>
+        </select>
+    </div>
+	
+ <div class="form-row">
+        <label for="node-input-ledMode"><i class="icon-tasks"></i> Led Mode</label>
+        <select type="text" id="node-input-ledMode">
+            <option value="0">Continuous Lightning</option>
+            <option value="1">Blinking slow</option>
+            <option value="2">Blinking middle</option>
+			<option value="3">Blinking fast</option>
+			<option value="4">Flashing single</option>
+			<option value="5">Flashing double</option>
+			<option value="6">Flashing triple</option>
+			<option value="7">Sine slow</option>
+			<option value="8">Sine fast</option>
+        </select>
+    </div>
+	 <div class="form-row">
+        <label for="node-input-buzzPattern"><i class="icon-tasks"></i> Buzzer Mode</label>
+        <select type="text" id="node-input-buzzPattern">
+            <option value="0">Continuous beep sound</option>
+            <option value="1">Rapid Intermittent beep</option>
+            <option value="2">Rapid Hi-Lo</option>
+			<option value="3">Sweep up sound</option>
+			<option value="4">Continuous beep with cycle On/Off</option>
+			<option value="5">Rapid intermittent beep with cycle On/Off</option>
+			<option value="6">Rapid Hi-Lo with cycle On/Off</option>
+			<option value="7">Sweep up with cycle On/Off</option>
+			<option value="8">No sound</option>
+        </select>
+    </div>
+	
+	
+ <div class="form-row">
+        <label for="node-input-buzzState"><i class="icon-tasks"></i> Buzzer State</label>
+        <select type="text" id="node-input-buzzState">
+            <option value="0">Off</option>
+            <option value="1">On</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="out-Comlight56">
+    <h2>Node: <strong>out-Comlight56</strong></h2>
+
+    <h3>Description:</h3>
+    <p>This node processes input values for controlling LED color, LED mode, buzzer pattern, and buzzer state, and converts them into process data that is sent as output. The input values are validated before processing, and if any of the values are invalid, they are reset to default values.</p>
+
+    <h3>Configuration:</h3>
+    <ul>
+        <li><strong>ledColor</strong>: The LED color to be processed. This can be set via the message property <code>msg.ledColor</code>. Accepted values range from <code>0</code> to <code>7</code>.</li>
+        <li><strong>ledMode</strong>: The LED mode to be processed. This can be set via the message property <code>msg.ledMode</code>. Accepted values range from <code>0</code> to <code>8</code>.</li>
+        <li><strong>buzzPattern</strong>: The buzzer pattern to be processed. This can be set via the message property <code>msg.buzzPattern</code>. Accepted values range from <code>0</code> to <code>8</code>.</li>
+        <li><strong>buzzState</strong>: The buzzer state (on/off) to be processed. This can be set via the message property <code>msg.buzzState</code>. It can be a <code>number</code> (0 or 1) or a <code>boolean</code> value (true or false).</li>
+    </ul>
+
+    <h3>Functionality:</h3>
+    <ol>
+        <li><strong>Input Validation:</strong> The node checks if the incoming message contains valid properties:
+            <ul>
+                <li>If <code>msg.ledColor</code> is within the range <code>0</code> to <code>7</code>, it is accepted; otherwise, it is reset to <code>0</code>.</li>
+                <li>If <code>msg.ledMode</code> is within the range <code>0</code> to <code>8</code>, it is accepted; otherwise, it is reset to <code>0</code>.</li>
+                <li>If <code>msg.buzzPattern</code> is within the range <code>0</code> to <code>8</code>, it is accepted; otherwise, it is reset to <code>0</code>.</li>
+                <li>If <code>msg.buzzState</code> is either a <code>number</code> (0 or 1) or a <code>boolean</code>, it is accepted; otherwise, it is reset to <code>0</code>.</li>
+            </ul>
+        </li>
+        <li><strong>Process Data:</strong> The processed values are packed into a two-byte array <code>pD</code>:
+            <ul>
+                <li><code>pD[1]</code> contains the <code>ledColor</code> and <code>buzzState</code>, combined with a bit-shift operation.</li>
+                <li><code>pD[0]</code> contains the <code>ledMode</code> and <code>buzzPattern</code>, also combined with a bit-shift operation.</li>
+            </ul>
+        </li>
+        <li>A new message containing the process data is then sent with the <code>payload</code> and <code>pD</code>.</li>
+    </ol>
+
+    <h3>Example:</h3>
+    <p><strong>Input message:</strong> <code>{ "ledColor": 3, "ledMode": 2, "buzzPattern": 1, "buzzState": true }</code></p>
+    <p><strong>Output:</strong> A message containing the process data, e.g., <code>{ "payload": "", "pD": [0x12, 0x31] }</code></p>
+
+    <h3>Status Messages:</h3>
+    <ul>
+        <li><strong>Green:</strong> Process data is ready, and all values are valid.</li>
+        <li><strong>Yellow:</strong> One or more values are invalid and have been reset to their default.</li>
+    </ul>
+</script>
