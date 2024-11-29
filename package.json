@@ -1,21 +1,40 @@
 {
   "name": "node-red-contrib-murr-impact67pro-iolink-api",
-  "version": "1.1.0",
+  "version": "1.1.25",
   "description": "Node Red Examples for the usage of Murr IO-Link Master IMPACT67 Pro .",
   "dependencies": {},
+  
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "git+https://github.com/fkmurrag/murr-impact67-iolink-api"
   },
+  
+   "bugs": {
+    "url": "  https://github.com/fkmurrag/murr-impact67-iolink-api/issues"
+  },
+  
    "keywords": [
     "node-red",
     "iolink",
     "murr",
-	"api"
+	"api",
+	"JSON"
+	
   ],
   "author": "Felix Kottmann",
   "license": "MIT",
+  "engines": 
+  {
+    "node": ">=8.0.0"
+  },
+  "directories": 
+  {
+    "examples": "examples"
+  },
+
   "node-red": {
+	  
+	"version":">=2.0.0",
     "nodes": {
       "extract-data": "extract-data.js",
 	  "get-processdata":"get-processdata.js",
@@ -36,9 +55,16 @@
 	  "get-porttemperature":"get-porttemperature.js",
 	  "write-processdata":"write-processdata.js",
 	  "write-parameterdata":"write-parameterdata.js",
-	  "write-portconfig":"write-portconfig.js"
+	  "write-portconfig":"write-portconfig.js",
+	  "out-Comlight56":"out-Comlight56.js",
+	  "out-DIO2B":"out-DIO2B.js",
+	  "out-AO10VUNI":"out-AO10VUNI.js",
+	  "out-AO4_20mAUNI":"out-AO4_20mAUNI.js",
+	  "out-AO0_20mAUNI":"out-AO0_20mAUNI.js",
+	  "in-DIOHub":"in-DIOHub.js"
 	  
     }
+
   }
 
 }

@@ -1,0 +1,66 @@
+<script type="text/javascript">
+    RED.nodes.registerType('out-AO4_20mAUNI',
+    {
+        category: 'Murr IOL Devices Output',
+        color: '#3db60f',
+        defaults: 
+        {
+            name: {value:"out-AO4_20mAUNI"},
+			analogValue:{value:"4",required:false}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "murr.png",
+        label: function() 
+        {
+            return this.name||"out-AO4_20mAUNI";
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="out-AO4_20mAUNI">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+ 	<div class="form-row">
+        <label for="node-input-analogValue"><i class="icon-tag"></i> Current Value</label>
+        <input type="number" min="4" max="22.96" step="0.01" id="node-input-analogValue" placeholder="msg.analogValue">
+    </div>
+<script type="text/html" data-help-name="out-AO4_20mAUNI">
+
+   
+        <h2>Node: <strong>out-AO4_20mAUNI</strong></h2>
+    
+        <h3>Description:</h3>
+        <p>This node receives <strong>analog values</strong> and converts them into a process data array, which is sent as output. The analog input value must be between <strong>4 mA</strong> and <strong>22.96 mA</strong> to be valid. If the value is outside this range, an error status is displayed, and the output is set to <code>4 mA</code>.</p>
+    
+        <h3>Configuration:</h3>
+        <ul>
+            <li><strong>analogValue</strong>: The analog input value to be processed. This can be set using the incoming message property <code>msg.analogValue</code>.</li>
+        </ul>
+    
+        <h3>Functionality:</h3>
+        <ol>
+            <li><strong>Input Validation:</strong> The node checks if the incoming message (<code>msg</code>) contains a valid <code>msg.analogValue</code> property of type <code>number</code>.
+                <ul>
+                    <li>If <code>msg.analogValue</code> is between <code>4</code> and <code>22.96</code>, the value is accepted and processed.</li>
+                    <li>If <code>msg.analogValue</code> is outside this range, the status is set to <strong>yellow</strong>, and the value is reset to <code>4</code>.</li>
+                </ul>
+            </li>
+            <li><strong>Conversion:</strong> The valid analog value is converted to a decimal value using the formula <code>Math.ceil((analogValue - 4) / 0.0005787)</code>. This decimal value is then split into two bytes of process data (<code>pD</code>).</li>
+            <li><strong>Process Data:</strong> The result is stored in a process data array (<code>pD</code>) and sent in a new message with the <code>payload</code>.</li>
+        </ol>
+    
+        <h3>Example:</h3>
+        <p><strong>Input message:</strong> <code>{ "analogValue": 12.5 }</code></p>
+        <p><strong>Output:</strong> A message containing the process data, e.g., <code>{ "payload": "", "pD": [0x02, 0xF3] }</code></p>
+    
+        <h3>Status Messages:</h3>
+        <ul>
+            <li><strong>Green:</strong> Process data is ready, and the analog value is within the valid range.</li>
+            <li><strong>Yellow:</strong> The analog value is invalid and has been reset to <code>4</code>.</li>
+        </ul>
+    
+    
+</script>
